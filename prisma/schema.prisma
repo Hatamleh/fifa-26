@@ -1,0 +1,39 @@
+// FIFA World Cup 2026 — schema.
+// One table. The app is read-only: the seed writes the 48 qualified teams and
+// the API only ever reads them back.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  id            Int     @id @default(autoincrement())
+
+  name          String  @unique // English name as FIFA lists it, accents included
+  // ASCII-folded name ("Turkiye", "Curacao", "Cote d'Ivoire"). Searching only
+  // `name` would make "turkiye" miss "Türkiye", because ü and u are different
+  // characters to SQLite's LIKE.
+  slug          String  @unique
+  code          String  @unique // FIFA three-letter code, e.g. BRA
+  flag          String // emoji flag, so the app needs no image hosting
+
+  continent     String // geographic: Africa, Asia, Europe, North America, South America, Oceania
+  confederation String // AFC, CAF, CONCACAF, CONMEBOL, OFC, UEFA
+
+  // True only for the four teams playing their first ever World Cup in 2026.
+  isDebut       Boolean @default(false)
+
+  // World Cups won, counting the 2026 edition. 0 for everyone but the seven
+  // former champions in this field.
+  titles        Int     @default(0)
+  // The winning years, comma-separated — shown under the champion tag.
+  titleYears    String  @default("")
+
+  @@index([name])
+  @@index([continent])
+}
