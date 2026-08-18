@@ -34,6 +34,23 @@ model Team {
   // The winning years, comma-separated — shown under the champion tag.
   titleYears    String  @default("")
 
+  // Denormalised count of the rows in `Like` for this team. Kept in sync by
+  // the repository so listing 48 teams stays a single query.
+  likes         Int     @default(0)
+
   @@index([name])
   @@index([continent])
+}
+
+// One row per (team, fan). There is no auth: a "fan" is a UUID the browser
+// generates on first visit and keeps in localStorage, sent as `x-fan-id`.
+// The unique pair is what makes liking idempotent — clicking twice cannot
+// create two rows.
+model Like {
+  id       Int      @id @default(autoincrement())
+  teamCode String
+  fanId    String
+
+  @@unique([teamCode, fanId])
+  @@index([fanId])
 }

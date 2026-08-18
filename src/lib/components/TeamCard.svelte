@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Sparkles, Trophy } from 'lucide-svelte'
+  import LikeButton from '$lib/components/LikeButton.svelte'
   import type { Team } from '$lib/types'
 
   let { team }: { team: Team } = $props()
@@ -49,6 +50,10 @@
         {team.titles}× champion
       </span>
     {/if}
+
+    <div class="ml-auto">
+      <LikeButton {team} />
+    </div>
   </div>
 
   {#if isChampion}

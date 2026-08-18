@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { Search, X } from 'lucide-svelte'
   import TeamCard from '$lib/components/TeamCard.svelte'
+  import { fanId } from '$lib/fan'
   import type { Team, TeamsResponse } from '$lib/types'
 
   let teams = $state<Team[]>([])
@@ -26,7 +27,9 @@
     const url = term.trim() ? `/api/v1/teams?search=${encodeURIComponent(term.trim())}` : '/api/v1/teams'
 
     try {
-      const response = await fetch(url)
+      // The fan id comes along so the server can say which teams this browser
+      // has already backed; without it every card would come back unliked.
+      const response = await fetch(url, { headers: { 'x-fan-id': fanId() } })
       if (!response.ok) throw new Error(`Request failed with ${response.status}`)
 
       const data: TeamsResponse = await response.json()

@@ -90,7 +90,10 @@ const teams: Seed[] = [
 
 async function main() {
   // The seed is the single source of truth for this table, so it is rebuilt
-  // from scratch on every run rather than upserted.
+  // from scratch on every run rather than upserted. Likes go with it —
+  // `Like.teamCode` is a plain string with no foreign key, so leaving old rows
+  // behind would desync every `Team.likes` count.
+  await prisma.like.deleteMany()
   await prisma.team.deleteMany()
 
   for (const team of teams) {
@@ -104,7 +107,7 @@ async function main() {
     })
   }
 
-  console.log(`Seeded ${teams.length} teams.`)
+  console.log(`Seeded ${teams.length} teams, 0 likes.`)
 }
 
 main()

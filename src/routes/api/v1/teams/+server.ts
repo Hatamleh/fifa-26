@@ -8,10 +8,15 @@ import { teamRepository } from '$lib/server/repositories/team.repository'
  *
  * 200 -> { teams: Team[] }
  *
+ * An optional `x-fan-id` header identifies the anonymous fan, which is what
+ * fills in `liked` on each team. Without it every `liked` is false.
+ *
  * The page calls this from the browser rather than through a server `load`,
  * so the request is visible to the network layer and can be stubbed.
  */
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, request }) => {
   const search = url.searchParams.get('search') ?? undefined
-  return json({ teams: await teamRepository.list(search) })
+  const fanId = request.headers.get('x-fan-id') ?? undefined
+
+  return json({ teams: await teamRepository.list(search, fanId) })
 }
