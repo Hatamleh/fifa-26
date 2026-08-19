@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Sparkles, Trophy } from 'lucide-svelte'
   import LikeButton from '$lib/components/LikeButton.svelte'
+  import PromoOverlay from '$lib/components/PromoOverlay.svelte'
   import type { Team } from '$lib/types'
 
   let { team }: { team: Team } = $props()
@@ -11,8 +12,14 @@
 <li
   data-testid="team-card"
   data-team={team.code}
-  class="surface surface-interactive flex flex-col gap-4 p-5"
+  class="surface surface-interactive relative flex flex-col gap-4 p-5"
 >
+  <!-- Only the Netherlands card carries the ad, so the popup can never
+       interrupt the search or stubbing lessons. -->
+  {#if team.code === 'NED'}
+    <PromoOverlay teamName={team.name} />
+  {/if}
+
   <div class="flex items-start gap-4">
     <!-- The emoji is decoration; the name next to it already says which team
          this is, so it is hidden from the accessibility tree. -->

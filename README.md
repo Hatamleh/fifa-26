@@ -154,7 +154,7 @@ Stable `data-testid` attributes: `search-input`, `clear-search`, `result-count`,
 `team-continent`, `team-confederation`, `debut-tag`, `returning-tag`,
 `champion-tag`, `title-years`, `empty-state`, `skeleton`, `error`, `retry`,
 `like-button` (plus `data-liked` and `data-pending`), `like-count`,
-`like-error`.
+`like-error`, `promo-overlay`, `promo-close`.
 
 `data-team` sits on the card element itself, so a single team is
 `[data-testid="team-card"][data-team="BRA"]` — not a `filter({ has })`.
@@ -186,6 +186,48 @@ expect((await response.json()).likes).toBe(13)
   returns to where it was with `like-error` visible.
 - **Idempotency:** click twice quickly — two requests go out, the state still
   ends up right.
+
+### The ad on the Netherlands card
+
+The `NED` card — and only that card — sometimes gets a sponsored overlay
+covering it. It exists for `page.addLocatorHandler()`.
+
+- It appears on roughly **55% of visits**, decided per page load.
+- It lands **120–380 ms after the card mounts**, not with it.
+- It covers the whole card (`absolute inset-0`), so a click on that card's
+  like button fails with *"…intercepts pointer events"*.
+- Closing it re-arms it for 15–25 s later.
+
+```ts
+await page.addLocatorHandler(page.getByTestId('promo-overlay'), async (promo) => {
+  await promo.getByTestId('promo-close').click()
+})
+```
+
+Every one of those numbers is deliberate, and measured over 20 runs of the same
+test on this app:
+
+| Approach | Result |
+|---|---|
+| No handler | **9/20 passed** — 55% failure |
+| Dismiss it once before the test | **14/20 passed** — still 30% failure |
+| `addLocatorHandler` | **20/20 passed** (it fired in 9 of the 20) |
+
+That middle row is the point of the lesson. The obvious fix looks like it
+works, and still leaves a test that fails one run in three.
+
+Two things worth knowing before writing the exercise:
+
+- **It is scoped to `NED` on purpose.** Nothing else on the page can be
+  covered, so the search and stubbing lessons are never disturbed by it.
+- **Wait for the page to hydrate before typing.** `fill()` on the search box
+  before the cards have rendered sets the input's value without triggering
+  Svelte's handler, so the search silently never runs and the test quietly
+  passes against the *unfiltered* list. Wait for a `team-card` first.
+
+Because `NED` is the 28th card of 48 it starts below the fold, so open the
+exercise with a search for `netherlands` — that brings it on screen and reuses
+the search lesson.
 
 ## Stack
 
