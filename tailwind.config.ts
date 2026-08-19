@@ -35,6 +35,11 @@ const config: Config = {
         premium: '#83c092',
         sand: '#dbbc7f',
         destructive: '#e67e80',
+        // The Netherlands ad only. Deliberately outside the Evergreen palette
+        // so a sponsored takeover cannot be mistaken for part of the app.
+        oranje: '#e8801f',
+        'oranje-hover': '#f2922f',
+
         accent: {
           purple: '#d699b6',
           sand: '#dbbc7f',

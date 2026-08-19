@@ -44,24 +44,48 @@
 
 {#if visible}
   <!-- inset-0 on purpose: it has to cover the like button, not sit next to
-       it. An overlay that does not intercept the click teaches nothing. -->
+       it. An overlay that does not intercept the click teaches nothing.
+       Opaque, not translucent — a card showing faintly through the ad reads
+       as a rendering bug rather than a takeover. -->
   <div
     data-testid="promo-overlay"
-    class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 rounded-card bg-ever-card/95 p-5 text-center backdrop-blur-sm"
+    class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 overflow-hidden rounded-card border border-oranje/30 bg-ever-bg px-5 text-center"
   >
+    <!-- A warm bloom behind the copy. The rest of the app is pine green, so
+         the orange instantly reads as "this is an ad, not part of the app". -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-20 left-1/2 h-44 w-44 -translate-x-1/2 rounded-full bg-oranje/25 blur-3xl"
+    ></div>
+
     <button
       type="button"
       onclick={close}
       data-testid="promo-close"
       aria-label="Close the offer"
-      class="absolute right-3 top-3 rounded-pill p-1.5 text-subtle transition-colors hover:bg-ever-surface hover:text-foreground"
+      class="absolute right-2.5 top-2.5 z-10 rounded-pill p-1.5 text-subtle transition-colors hover:bg-ever-card hover:text-foreground"
     >
-      <X size={16} />
+      <X size={15} />
     </button>
 
-    <p class="font-mono text-[10px] uppercase tracking-widest text-subtle">Sponsored</p>
-    <p class="font-display text-lg font-semibold text-foreground">Oranje fan shop</p>
-    <p class="text-sm text-muted-foreground">20% off every {teamName} shirt this week.</p>
-    <button type="button" class="btn mt-1">Shop now</button>
+    <span
+      class="relative rounded-pill border border-oranje/40 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-oranje"
+    >
+      Sponsored
+    </span>
+
+    <p class="relative font-display text-xl font-bold leading-tight text-foreground">
+      Oranje fan shop
+    </p>
+    <p class="relative text-sm leading-snug text-muted-foreground">
+      20% off every {teamName} shirt this week.
+    </p>
+
+    <button
+      type="button"
+      class="relative mt-1.5 rounded-pill bg-oranje px-4 py-1.5 text-sm font-semibold text-ever-ink transition-colors hover:bg-oranje-hover"
+    >
+      Shop now
+    </button>
   </div>
 {/if}
